@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        {% if form.instance.id %}
+            Edit Book
+        {% else %}
+            Add Book
+        {% endif %}
+    </title>
+</head>
+<body>
+
+    {% if form.instance.id %}
+        <h1>Edit Book</h1>
+    {% else %}
+        <h1>Add Book</h1>
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            {% if form.instance.id %}
+                Update Book
+            {% else %}
+                Add Book
+            {% endif %}
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/books/">Back to Books</a>
+
+</body>
+</html>
