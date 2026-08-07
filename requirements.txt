@@ -4,3 +4,4 @@ sqlparse==0.5.3
 asgiref==3.8.1
 tzdata==2025.2
 psycopg2-binary==2.9.10
+Pillow==11.3.0
