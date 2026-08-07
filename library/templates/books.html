@@ -1,238 +1,66 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Library Management System</title>
+{% extends 'base.html' %}
 
-    <style>
+{% block title %}
+Books
+{% endblock %}
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, sans-serif;
-        }
+{% block content %}
 
-        body{
-            background:#eef2f7;
-            padding:40px;
-        }
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
 
-        .container{
-            max-width:1200px;
-            margin:auto;
-        }
+    <form method="GET" class="d-flex">
 
-        .navbar{
-            background:#1e3a5f;
-            color:white;
-            padding:18px 25px;
-            border-radius:10px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:25px;
-        }
+        <input
+            type="text"
+            name="search"
+            class="form-control me-2"
+            style="width:350px;"
+            placeholder="Search by Title, Author or Genre"
+            value="{{ search }}">
 
-        .navbar h2{
-            font-size:28px;
-        }
+        <button type="submit" class="btn btn-primary">
+            Search
+        </button>
 
-        .user{
-            display:flex;
-            align-items:center;
-            gap:15px;
-            font-size:17px;
-        }
+    </form>
 
-        .logout{
-            background:#dc3545;
-            color:white;
-            text-decoration:none;
-            padding:10px 18px;
-            border-radius:6px;
-            font-weight:bold;
-        }
+    <a href="/add-book/" class="btn btn-success">
+        + Add Book
+    </a>
 
-        .logout:hover{
-            background:#bb2d3b;
-        }
+</div>
 
-        .top-section{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:20px;
-            flex-wrap:wrap;
-        }
+<table class="table table-bordered table-hover text-center align-middle">
 
-        input{
-            width:300px;
-            padding:10px;
-            border:1px solid #ccc;
-            border-radius:6px;
-            font-size:15px;
-        }
-
-        button{
-            padding:10px 18px;
-            border:none;
-            background:#1e3a5f;
-            color:white;
-            border-radius:6px;
-            cursor:pointer;
-            font-size:15px;
-        }
-
-        button:hover{
-            background:#16304f;
-        }
-
-        .add-btn{
-            background:#198754;
-            color:white;
-            text-decoration:none;
-            padding:10px 18px;
-            border-radius:6px;
-            font-weight:bold;
-        }
-
-        .add-btn:hover{
-            background:#146c43;
-        }
-
-        table{
-            width:100%;
-            border-collapse:collapse;
-            background:white;
-            border-radius:10px;
-            overflow:hidden;
-            box-shadow:0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        th{
-            background:#1e3a5f;
-            color:white;
-            padding:15px;
-        }
-
-        td{
-            padding:15px;
-            text-align:center;
-            border-bottom:1px solid #ddd;
-        }
-
-        tr:nth-child(even){
-            background:#f8f9fa;
-        }
-
-        tr:hover{
-            background:#eef4ff;
-        }
-
-        .available{
-            color:green;
-            font-weight:bold;
-        }
-
-        .borrowed{
-            color:red;
-            font-weight:bold;
-        }
-
-        .edit{
-            color:#0d6efd;
-            text-decoration:none;
-            font-weight:bold;
-        }
-
-        .delete{
-            color:#dc3545;
-            text-decoration:none;
-            font-weight:bold;
-        }
-
-        .borrow{
-            color:#198754;
-            text-decoration:none;
-            font-weight:bold;
-        }
-
-        .return{
-            color:#fd7e14;
-            text-decoration:none;
-            font-weight:bold;
-        }
-
-        .edit:hover,
-        .delete:hover,
-        .borrow:hover,
-        .return:hover{
-            text-decoration:underline;
-        }
-
-        .footer{
-            text-align:center;
-            margin-top:30px;
-            color:#666;
-            font-size:14px;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <div class="navbar">
-
-        <h2>📚 Library Management System</h2>
-
-        <div class="user">
-
-            Welcome,
-            <strong>{{ request.user.username }}</strong>
-
-            <a class="logout" href="/logout/">Logout</a>
-
-        </div>
-
-    </div>
-
-    <div class="top-section">
-
-        <form method="GET">
-
-            <input
-                type="text"
-                name="search"
-                placeholder="Search by Title, Author or Genre"
-                value="{{ search }}"
-            >
-
-            <button type="submit">Search</button>
-
-        </form>
-
-        <a class="add-btn" href="/add-book/">+ Add Book</a>
-
-    </div>
-
-    <table>
+    <thead class="table-primary">
 
         <tr>
+            <th>Cover</th>
             <th>Title</th>
             <th>Author</th>
             <th>Genre</th>
             <th>Quantity</th>
+            <th>Borrow Date</th>
+            <th>Return Date</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
 
-        {% for book in books %}
+    </thead>
+
+    <tbody>
+
+    {% for book in books %}
 
         <tr>
+
+            <td>
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" width="60" height="80" alt="Book Cover">
+                {% else %}
+                    No Image
+                {% endif %}
+            </td>
 
             <td>{{ book.title }}</td>
             <td>{{ book.author }}</td>
@@ -240,36 +68,50 @@
             <td>{{ book.quantity }}</td>
 
             <td>
-
-                {% if book.is_borrowed %}
-
-                    <span class="borrowed">Borrowed</span>
-
+                {% if book.borrow_date %}
+                    {{ book.borrow_date }}
                 {% else %}
-
-                    <span class="available">Available</span>
-
+                    -
                 {% endif %}
+            </td>
 
+            <td>
+                {% if book.return_date %}
+                    {{ book.return_date }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% if book.is_borrowed %}
+                    <span class="badge bg-danger">Borrowed</span>
+                {% else %}
+                    <span class="badge bg-success">Available</span>
+                {% endif %}
             </td>
 
             <td>
 
-                <a class="edit" href="/edit-book/{{ book.id }}/">Edit</a>
+                <a href="/edit-book/{{ book.id }}/" class="btn btn-primary btn-sm">
+                    Edit
+                </a>
 
-                |
-
-                <a class="delete" href="/delete-book/{{ book.id }}/">Delete</a>
-
-                |
+                <a href="/delete-book/{{ book.id }}/" class="btn btn-danger btn-sm">
+                    Delete
+                </a>
 
                 {% if book.is_borrowed %}
 
-                    <a class="return" href="/return-book/{{ book.id }}/">Return</a>
+                    <a href="/return-book/{{ book.id }}/" class="btn btn-warning btn-sm">
+                        Return
+                    </a>
 
                 {% else %}
 
-                    <a class="borrow" href="/borrow-book/{{ book.id }}/">Borrow</a>
+                    <a href="/borrow-book/{{ book.id }}/" class="btn btn-success btn-sm">
+                        Borrow
+                    </a>
 
                 {% endif %}
 
@@ -277,25 +119,16 @@
 
         </tr>
 
-        {% empty %}
+    {% empty %}
 
         <tr>
-
-            <td colspan="6">No books found.</td>
-
+            <td colspan="9">No books found.</td>
         </tr>
 
-        {% endfor %}
+    {% endfor %}
 
-    </table>
+    </tbody>
 
-    <div class="footer">
+</table>
 
-        © 2026 Library Management System | Developed using Python & Django
-
-    </div>
-
-</div>
-
-</body>
-</html>
+{% endblock %}

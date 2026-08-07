@@ -12,6 +12,9 @@ urlpatterns = [
     path('borrow-book/<int:id>/', views.borrow_book, name='borrow_book'),
     path('return-book/<int:id>/', views.return_book, name='return_book'),
 
+    path('activity-log/', views.activity_log, name='activity_log'),
+         
+
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout_user, name='logout'),

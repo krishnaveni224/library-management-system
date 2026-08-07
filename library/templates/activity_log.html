@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Activity Log
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow p-4">
+
+    <h2 class="mb-4 text-center">📋 Activity Log</h2>
+
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-primary">
+            <tr>
+                <th>User</th>
+                <th>Action</th>
+                <th>Book</th>
+                <th>Date & Time</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for log in logs %}
+
+            <tr>
+                <td>{{ log.user.username }}</td>
+                <td>{{ log.action }}</td>
+                <td>
+                    {% if log.book %}
+                        {{ log.book.title }}
+                    {% elif log.book_title %}
+                        {{ log.book_title}}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ log.timestamp }}</td>
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="4" class="text-center">
+                    No activity found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'books' %}" class="btn btn-primary">
+            ← Back to Books
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

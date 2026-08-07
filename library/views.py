@@ -1,9 +1,12 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.db.models import Q
-from .models import Book
-from .forms import BookForm
+from .models import Book, ActivityLog
+from .forms import BookForm, RegisterForm
+from datetime import date
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import  AuthenticationForm
 from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.decorators import login_required
 
@@ -36,11 +39,21 @@ def add_book(request):
 
     if request.method == 'POST':
 
-        form = BookForm(request.POST)
+        form = BookForm(request.POST, request.FILES)
 
         if form.is_valid():
 
-            form.save()
+            book = form.save()
+
+            ActivityLog.objects.create(
+                user=request.user,
+                action="Added Book",
+                book=book,
+                book_title=book.title
+            )
+
+
+            messages.success(request, "Book added successfully!")
 
             return redirect('/books/')
 
@@ -58,11 +71,22 @@ def edit_book(request, id):
 
     if request.method == 'POST':
 
-        form = BookForm(request.POST, instance=book)
+        form = BookForm(request.POST, request.FILES, instance=book)
 
         if form.is_valid():
 
-            form.save()
+            updated_book = form.save()
+
+            ActivityLog.objects.create(
+                user=request.user,
+                action="Updated Book",
+                book=updated_book,
+                book_title=updated_book.title
+            )
+
+           
+
+            messages.success(request, "Book updated sucessfully")
 
             return redirect('/books/')
 
@@ -78,7 +102,19 @@ def delete_book(request, id):
 
     book = get_object_or_404(Book, id=id)
 
+    book_title = book.title
+
+    ActivityLog.objects.create(
+        user=request.user,
+        action="Deleted Book",
+        book=book,
+        book_title=book.title
+
+    )
+
     book.delete()
+
+    messages.success(request, "Book deleted successfully")
 
     return redirect('/books/')
 
@@ -88,9 +124,21 @@ def borrow_book(request, id):
 
     book = get_object_or_404(Book, id=id)
 
-    book.is_borrowed = True
+    if not book.is_borrowed:
 
-    book.save()
+        book.is_borrowed = True
+        book.borrow_date = date.today()
+        book.return_date = None
+        book.save()
+
+        ActivityLog.objects.create(
+            user=request.user,
+            action="Borrowed Book",
+            book=book,
+            book_title=book.title
+        )
+
+    messages.success(request, "Book borrowed successfully")
 
     return redirect('/books/')
 
@@ -100,10 +148,20 @@ def return_book(request, id):
 
     book = get_object_or_404(Book, id=id)
 
-    book.is_borrowed = False
+    if book.is_borrowed:
 
-    book.save()
+       book.is_borrowed = False
+       book.return_date = date.today()
+       book.save()
 
+       ActivityLog.objects.create(
+           user=request.user,
+           action="Returned Book",
+           book=book,
+           book_title=book.title
+       )
+
+    messages.success(request, "Book returned successfully")
     return redirect('/books/')
 
 
@@ -111,7 +169,7 @@ def register(request):
 
     if request.method == 'POST':
 
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
 
         if form.is_valid():
 
@@ -121,12 +179,15 @@ def register(request):
 
     else:
 
-        form = UserCreationForm()
+        form = RegisterForm()
 
     return render(request, 'register.html', {'form': form})
 
 
 def login(request):
+
+    if request.user.is_authenticated:
+        return redirect('/books/')
 
     if request.method == 'POST':
 
@@ -137,6 +198,11 @@ def login(request):
             user = form.get_user()
 
             auth_login(request, user)
+
+            ActivityLog.objects.create(
+                user=user,
+                action="Logged In"
+            )
 
             return redirect('/books/')
 
@@ -149,6 +215,27 @@ def login(request):
 
 def logout_user(request):
 
+    if request.user.is_authenticated:
+
+        ActivityLog.objects.create(
+            user=request.user,
+            action="Logged Out"
+        )
+
     logout(request)
 
     return redirect('/login/')
+
+@login_required
+def activity_log(request):
+
+    if not request.user.is_superuser:
+        return HttpResponse("Access Denied! Only the admin can view the Activity Log.")
+
+    logs = ActivityLog.objects.all().order_by('-timestamp')
+
+    return render(request, 'activity_log.html', {
+        'logs' : logs
+    })
+
+                  

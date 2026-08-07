@@ -1,29 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>
+{% extends 'base.html' %}
+
+{% block title %}
+{% if form.instance.id %}
+Edit Book
+{% else %}
+Add Book
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+
+    <h2 class="text-center mb-4">
         {% if form.instance.id %}
             Edit Book
         {% else %}
             Add Book
         {% endif %}
-    </title>
-</head>
-<body>
+    </h2>
 
-    {% if form.instance.id %}
-        <h1>Edit Book</h1>
-    {% else %}
-        <h1>Add Book</h1>
-    {% endif %}
-
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
 
         {% csrf_token %}
 
         {{ form.as_p }}
 
-        <button type="submit">
+        <button type="submit" class="btn btn-primary w-100">
             {% if form.instance.id %}
                 Update Book
             {% else %}
@@ -33,9 +36,12 @@
 
     </form>
 
-    <br>
+    <div class="text-center mt-3">
+        <a href="/books/" class="btn btn-secondary">
+            Back to Books
+        </a>
+    </div>
 
-    <a href="/books/">Back to Books</a>
+</div>
 
-</body>
-</html>
+{% endblock %}

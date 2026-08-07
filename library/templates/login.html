@@ -1,11 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h1>Login</h1>
+{% block title %}
+Login
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm p-4 mx-auto" style="max-width: 450px;">
+
+    <h2 class="text-center mb-4">Login</h2>
 
     <form method="POST">
 
@@ -13,13 +16,16 @@
 
         {{ form.as_p }}
 
-        <button type="submit">Login</button>
+        <button type="submit" class="btn btn-primary w-100">
+            Login
+        </button>
 
     </form>
 
-    <br>
+    <div class="text-center mt-3">
+        <a href="/register/">Create a new account</a>
+    </div>
 
-    <a href="/register/">Create a new account</a>
+</div>
 
-</body>
-</html>
+{% endblock %}

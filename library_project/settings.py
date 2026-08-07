@@ -77,10 +77,16 @@ WSGI_APPLICATION = 'library_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'library_db',
+        'USER': 'postgres',
+        'PASSWORD': 'Venipsql@1234',
+        'HOST': 'localhost',
+        'PORT': '5433',
     }
 }
+ 
 
 
 # Password validation
@@ -107,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -128,6 +134,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 
 

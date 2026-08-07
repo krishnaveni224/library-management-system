@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+.env
+
+# Database
+db.sqlite3
+
+# Uploaded Media
+media/
+
+# VS Code
+.vscode/
+
+# Static files collected by Django
+staticfiles/
+
+# macOS
+.DS_Store
