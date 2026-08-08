@@ -75,16 +75,13 @@ WSGI_APPLICATION = 'library_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import os
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'library_db',
-        'USER': 'postgres',
-        'PASSWORD': 'Venipsql@1234',
-        'HOST': 'localhost',
-        'PORT': '5433',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 }
  
 
